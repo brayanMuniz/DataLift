@@ -1,6 +1,5 @@
-# backend/app/views.py
-
-from flask import Blueprint
+from flask import Blueprint, request, jsonify
+from .process import process_csv
 
 bp = Blueprint('main', __name__)
 
@@ -8,6 +7,18 @@ bp = Blueprint('main', __name__)
 def home():
     return "Welcome to DataLift!"
 
-@bp.route('/about')
-def about():
-    return "About DataLift"
+@bp.route('/process', methods=['POST'])
+def process():
+    uploaded_file = request.files['file']
+    if uploaded_file and uploaded_file.filename.endswith('.csv'):
+        # Save the file temporarily or process from memory
+        temp_path = "./file.csv"
+        uploaded_file.save(temp_path)
+        
+        # Process the CSV and get JSON output
+        json_output = process_csv(temp_path)
+        
+        # Return the JSON response
+        return jsonify(json_output)
+    else:
+        return jsonify({"error": "Invalid file format"}), 400

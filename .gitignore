@@ -62,3 +62,5 @@ var/
 # Used for testing
 notes.txt
 strong.csv
+output.json
+file.csv
