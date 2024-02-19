@@ -1,59 +1,28 @@
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
-import { faker } from '@faker-js/faker';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top' as const,
-    },
-    title: {
-      display: true,
-      text: 'Chart.js Line Chart',
-    },
-  },
-};
-
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-    {
-      label: 'Dataset 2',
-      data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
-      borderColor: 'rgb(53, 162, 235)',
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
+import LineChart from "./LineChart";
+import { ExerciseTrends } from "./types/trendData";
 
 export default function App() {
-  return <Line options={options} data={data} />;
+  // Fake example data
+  const fakeExerciseTrends: ExerciseTrends = {
+    "Squats": [
+      { date: "2021-01-01T12:00:00", trend_1RM: 100 },
+      { date: "2021-02-01T12:00:00", trend_1RM: 105 },
+      { date: "2021-03-01T12:00:00", trend_1RM: 110 },
+    ],
+    "Overhead Press": [
+      { date: "2021-01-01T12:00:00", trend_1RM: 90 },
+      { date: "2021-02-01T12:00:00", trend_1RM: 95 },
+      { date: "2021-03-01T12:00:00", trend_1RM: 100 },
+    ]
+  };
+
+  // Choose an exercise to display in the LineChart
+  const exerciseName = "Squats";
+
+  return (
+    <div>
+      <h1>Exercise Trend Chart</h1>
+      <LineChart exerciseTrends={fakeExerciseTrends} exerciseName={exerciseName} />
+    </div>
+  );
 }
