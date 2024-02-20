@@ -1,8 +1,9 @@
 import LineChart from "./LineChart";
 import { ExerciseTrends } from "./types/trendData";
+import React, { useState, useEffect } from 'react';
 
-export default function App() {
-  // Fake example data
+const generateFakeData = () => {
+  // Mimics dynamic data generation
   const fakeExerciseTrends: ExerciseTrends = {
     "Squats": [
       { date: "2021-01-01T12:00:00", trend_1RM: 100 },
@@ -15,14 +16,28 @@ export default function App() {
       { date: "2021-03-01T12:00:00", trend_1RM: 100 },
     ]
   };
+  return fakeExerciseTrends;
+};
 
-  // Choose an exercise to display in the LineChart
-  const exerciseName = "Squats";
+
+export default function App() {
+  const [dataReady, setDataReady] = useState<boolean>(false);
+  const [exerciseTrends, setExerciseTrends] = useState<ExerciseTrends>({});
+  const [exerciseName, setExerciseName] = useState<string>("Squats");
+
+  useEffect(() => {
+    // Mimic data fetching/generation on component mount
+    const data = generateFakeData();
+    setExerciseTrends(data);
+    setDataReady(true);
+  }, []);
+
+
 
   return (
-    <div>
+    <div >
       <h1>Exercise Trend Chart</h1>
-      <LineChart exerciseTrends={fakeExerciseTrends} exerciseName={exerciseName} />
+      <LineChart dataReady={dataReady} exerciseTrends={exerciseTrends} exerciseName={exerciseName} />
     </div>
   );
 }

@@ -38,9 +38,14 @@ export const options = {
 interface LineChartProps {
     exerciseTrends: ExerciseTrends;
     exerciseName: string;
+    dataReady: boolean;
 }
 
-export default function LineChart({ exerciseTrends, exerciseName }: LineChartProps) {
+export default function LineChart({ exerciseTrends, exerciseName, dataReady }: LineChartProps) {
+    if (!dataReady || !exerciseTrends[exerciseName]) {
+        return <div>Loading...</div>;
+    }
+
     const exerciseData = exerciseTrends[exerciseName];
 
     // Generate labels and data points from exerciseData
