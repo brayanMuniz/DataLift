@@ -1,42 +1,56 @@
+import React, { useState } from 'react';
+import Axios from 'axios';
 import LineChart from "./LineChart";
 import { ExerciseTrends } from "./types/trendData";
-import React, { useState, useEffect } from 'react';
-
-const generateFakeData = () => {
-  // Mimics dynamic data generation
-  const fakeExerciseTrends: ExerciseTrends = {
-    "Squats": [
-      { date: "2021-01-01T12:00:00", trend_1RM: 100 },
-      { date: "2021-02-01T12:00:00", trend_1RM: 105 },
-      { date: "2021-03-01T12:00:00", trend_1RM: 110 },
-    ],
-    "Overhead Press": [
-      { date: "2021-01-01T12:00:00", trend_1RM: 90 },
-      { date: "2021-02-01T12:00:00", trend_1RM: 95 },
-      { date: "2021-03-01T12:00:00", trend_1RM: 100 },
-    ]
-  };
-  return fakeExerciseTrends;
-};
-
 
 export default function App() {
+  const [file, setFile] = useState<File | null>(null); // State to hold the selected file
   const [dataReady, setDataReady] = useState<boolean>(false);
   const [exerciseTrends, setExerciseTrends] = useState<ExerciseTrends>({});
   const [exerciseName, setExerciseName] = useState<string>("Squats");
 
-  useEffect(() => {
-    // Mimic data fetching/generation on component mount
-    const data = generateFakeData();
-    setExerciseTrends(data);
-    setDataReady(true);
-  }, []);
+  // Function to handle file selection
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setFile(event.target.files[0]); // Set the selected file
+    }
+  };
 
+  // Function to handle form submission
+  const handleFormSubmit = async (event: React.FormEvent) => {
+    event.preventDefault(); // Prevent the form from submitting in the traditional way
 
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file); // Append the file to the form data
+
+      try {
+        // Make the API call using Axios
+        const response = await Axios.post('http://127.0.0.1:5000/process', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        // Log the response data in the console
+        console.log(response.data);
+
+        // Optionally, set your state based on the response
+        // setExerciseTrends(response.data);
+        // setDataReady(true);
+      } catch (error) {
+        console.error('Error uploading file:', error);
+      }
+    }
+  };
 
   return (
-    <div >
+    <div>
       <h1>Exercise Trend Chart</h1>
+      <form onSubmit={handleFormSubmit}>
+        <input type="file" accept=".csv" onChange={handleFileChange} />
+        <button type="submit">Upload CSV</button>
+      </form>
       <LineChart dataReady={dataReady} exerciseTrends={exerciseTrends} exerciseName={exerciseName} />
     </div>
   );
