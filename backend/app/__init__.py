@@ -1,9 +1,10 @@
-# backend/app/__init__.py
-
 from flask import Flask
-from .views import bp  # Import the Blueprint
+from flask_cors import CORS
+from .views import bp
 
 def create_app():
     app = Flask(__name__)
-    app.register_blueprint(bp)  # Register the Blueprint
+    # Allow all origins for development
+    CORS(app, supports_credentials=True)
+    app.register_blueprint(bp)
     return app
