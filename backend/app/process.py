@@ -1,7 +1,7 @@
 import pandas as pd
 from scipy.stats import linregress
 import matplotlib.dates as mdates
-import json
+import numpy as np  # Import numpy for NaN checking
 
 def process_csv(file_path):
     workout_data = pd.read_csv(file_path)
@@ -16,6 +16,7 @@ def process_csv(file_path):
     exercise_1rm_trends = {}
 
     for exercise in grouped_1rm['Exercise Name'].unique():
+        stripped_exercise = exercise.strip()
         exercise_data = grouped_1rm[grouped_1rm['Exercise Name'] == exercise]
         exercise_data.sort_values('Date', inplace=True)
 
@@ -24,8 +25,8 @@ def process_csv(file_path):
         slope, intercept, r_value, p_value, std_err = linregress(x, y)
 
         trend_line = slope * x + intercept
-        trend_data = [{'date': str(date), 'trend_1RM': float(estimate)} for date, estimate in zip(exercise_data['Date'], trend_line)]
-        exercise_1rm_trends[exercise] = trend_data
+        trend_data = [{'date': date.strftime('%Y-%m-%d %H:%M:%S'), 'trend_1RM': (float(estimate) if not pd.isna(estimate) else None)} for date, estimate in zip(exercise_data['Date'], trend_line)]
+        
+        exercise_1rm_trends[stripped_exercise] = trend_data
 
-    json_output = json.dumps(exercise_1rm_trends, indent=2)
-    return json_output
+    return exercise_1rm_trends

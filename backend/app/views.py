@@ -16,10 +16,9 @@ def process():
         temp_path = "./file.csv"
         uploaded_file.save(temp_path)
         
-        # Process the CSV and get JSON output
-        json_output = process_csv(temp_path)
-        
-        # Return the JSON response
-        return jsonify(json_output)
+        # Process the CSV and get the data as a Python dictionary
+        data = process_csv(temp_path)
+        # Use jsonify to return the data as a JSON response
+        return jsonify(data)
     else:
         return jsonify({"error": "Invalid file format"}), 400
