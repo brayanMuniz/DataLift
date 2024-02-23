@@ -32,12 +32,18 @@ export default function App() {
           },
         });
 
-        // Log the response data in the console
-        console.log(response.data);
+        if (response.data["Squat (Barbell)"]) {
+          console.log(response.data["Squat (Barbell)"]);
 
-        // Optionally, set your state based on the response
-        // setExerciseTrends(response.data);
-        // setDataReady(true);
+          const newData: ExerciseTrends = {
+            ...exerciseTrends, // Copy the existing data
+            ["Squat (Barbell)"]: response.data["Squat (Barbell)"], // Add the new data
+          };
+          setExerciseTrends(newData);
+          setExerciseName("Squat (Barbell)");
+          setDataReady(true);
+        }
+
       } catch (error) {
         console.error('Error uploading file:', error);
       }
