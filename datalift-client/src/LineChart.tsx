@@ -1,4 +1,4 @@
-import { ExerciseTrends } from './types/trendData';
+import { ExerciseTrends, TrendData } from './types/trendData';
 import { Line } from 'react-chartjs-2';
 
 import {
@@ -46,7 +46,7 @@ export default function LineChart({ exerciseTrends, exerciseName, dataReady }: L
         return <div>Loading...</div>;
     }
 
-    const exerciseData = exerciseTrends[exerciseName];
+    const exerciseData: TrendData[] = exerciseTrends[exerciseName];
 
     // Generate labels and data points from exerciseData
     const labels = exerciseData.map(data => data.date.split('T')[0]); // Assuming ISO date format, just get the date part

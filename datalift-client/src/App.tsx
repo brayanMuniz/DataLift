@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import Axios from 'axios';
 import LineChart from "./LineChart";
+import SelectExercise from "./SelectExercise";
 import { ExerciseTrends } from "./types/trendData";
-
 export default function App() {
-  const [file, setFile] = useState<File | null>(null); // State to hold the selected file
+
+  const [file, setFile] = useState<File | null>(null);
   const [dataReady, setDataReady] = useState<boolean>(false);
-  const [exerciseTrends, setExerciseTrends] = useState<ExerciseTrends>({});
-  const [exerciseName, setExerciseName] = useState<string>("Squats");
+  const [exerciseTrends, setExerciseTrends] = useState<ExerciseTrends>({}); // This holds data for all exercises
+  const [exerciseNames, setExerciseNames] = useState<string[]>([]); // Holds the names of all the exercises
+  const [exerciseName, setExerciseName] = useState<string>(""); // Holds the name of the selected exercise
+
 
   // Function to handle file selection
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,22 +28,16 @@ export default function App() {
       formData.append('file', file); // Append the file to the form data
 
       try {
-        // Make the API call using Axios
         const response = await Axios.post('http://127.0.0.1:5000/process', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
 
-        if (response.data["Squat (Barbell)"]) {
-          console.log(response.data["Squat (Barbell)"]);
 
-          const newData: ExerciseTrends = {
-            ...exerciseTrends, // Copy the existing data
-            ["Squat (Barbell)"]: response.data["Squat (Barbell)"], // Add the new data
-          };
-          setExerciseTrends(newData);
-          setExerciseName("Squat (Barbell)");
+        if (response.data) {
+          setExerciseNames(Object.keys(response.data));
+          setExerciseTrends(response.data);
           setDataReady(true);
         }
 
@@ -50,6 +47,10 @@ export default function App() {
     }
   };
 
+  const handleSelectExercise = (selectedExerciseName: string) => {
+    setExerciseName(selectedExerciseName);
+  };
+
   return (
     <div>
       <h1>Exercise Trend Chart</h1>
@@ -57,6 +58,13 @@ export default function App() {
         <input type="file" accept=".csv" onChange={handleFileChange} />
         <button type="submit">Upload CSV</button>
       </form>
+      {dataReady && (
+        <SelectExercise
+          exerciseNames={exerciseNames}
+          selectedExercise={exerciseName}
+          onSelectExercise={handleSelectExercise}
+        />
+      )}
       <LineChart dataReady={dataReady} exerciseTrends={exerciseTrends} exerciseName={exerciseName} />
     </div>
   );
